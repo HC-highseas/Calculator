@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        :root {
+            --gap: 15px;
+            --key-width: 50px;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .keyboard {
+            --rot-x: 10deg;
+            --rot-y: 0deg;
+            display: inline-flex;
+            flex-direction: column;
+            padding: var(--gap);
+            border-radius: 17.5px;
+            transform-style: preserve-3d;
+            perspective: 1200px;
+            transform: perspective(1200px) rotateX(var(--rot-x)) rotateY(var(--rot-y));
+            transition: 100ms transform;
+            background: #ffffff;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.8),
+                -2px -2px 6px rgba(255, 255, 255, 0.6),
+                2px 2px 5px rgba(0, 0, 0, 0.1),
+                5px 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .row {
+            display: flex;
+            transform-style: preserve-3d;
+        }
+
+        .row+.row {
+            margin-top: var(--gap);
+        }
+
+        .key {
+            --width: var(--key-width);
+            --color: hsl(0, 0%, 30%);
+            --size: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: calc(var(--width) * var(--size));
+            height: var(--width);
+            border-radius: 7.5px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            transform: translate3D(0, 0, 30px);
+            transition: 100ms;
+            cursor: pointer;
+            color: var(--color) !important;
+            background: #ffffff;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.8),
+                -2px -2px 6px rgba(255, 255, 255, 0.6),
+                2px 2px 5px rgba(0, 0, 0, 0.1),
+                5px 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .key:hover {
+            transform: translate3D(0, 0, 35px);
+        }
+
+        .key:active,
+        .key[data-selected]:not([data-selected=false]),
+        .key:focus,
+        .key.active {
+            transform: translate3D(0, 0, 25px);
+            border-color: var(--color);
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.8),
+                -2px -2px 6px rgba(255, 255, 255, 0.6),
+                2px 2px 5px rgba(0, 0, 0, 0.1),
+                5px 5px 10px rgba(0, 0, 0, 0.1),
+                0px 2px 8px var(--color),
+                0px 5px 20px var(--color);
+        }
+
+        .key:focus {
+            outline: none;
+            transform: translate3D(0, 0, 35px);
+        }
+
+        .key.equal,
+        .key.enter {
+            --color: hsl(120, 70%, 45%);
+        }
+
+        .key.c {
+            --color: hsl(0, 70%, 45%);
+        }
+
+        .key.divide {
+            --color: hsl(270, 70%, 45%);
+        }
+
+        .key.multiply {
+            --color: hsl(50, 70%, 45%);
+        }
+
+        .key.subtract {
+            --color: hsl(210, 70%, 45%);
+        }
+
+        .key.add {
+            --color: hsl(25, 70%, 45%);
+        }
+
+        .key+.key {
+            margin-left: var(--gap);
+        }
+
+        .key:before {
+            display: block;
+            content: attr(data-code);
+            color: var(--color);
+        }
+
+        .key.stretch {
+            padding: 0 25px;
+        }
+
+        .key.stretch:before {
+            width: 100%;
+        }
+
+        .key.empty:before {
+            display: none;
+        }
+
+        .display {
+            width: 100%;
+            height: 50px;
+            background: #ffffff;
+            color: #333333;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 10px;
+            box-sizing: border-box;
+            border-radius: 7.5px;
+            margin-bottom: var(--gap);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --gap: 10px;
+                --key-width: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="keyboard">
+        <div class="display" id="display">0</div>
+        <div class="row">
+            <div class="key" data-code="7"></div>
+            <div class="key" data-code="8"></div>
+            <div class="key" data-code="9"></div>
+            <div class="key c" data-code="C" style="--size: 2.3;"></div>
+        </div>
+        <div class="row">
+            <div class="key" data-code="4"></div>
+            <div class="key" data-code="5"></div>
+            <div class="key" data-code="6"></div>
+            <div class="key divide" data-code="/"></div>
+            <div class="key multiply" data-code="*"></div>
+        </div>
+        <div class="row">
+            <div class="key" data-code="1"></div>
+            <div class="key" data-code="2"></div>
+            <div class="key" data-code="3"></div>
+            <div class="key subtract" data-code="-"></div>
+            <div class="key add" data-code="+"></div>
+        </div>
+        <div class="row">
+            <div class="key" data-code="0"></div>
+            <div class="key" data-code="."></div>
+            <div class="key equal enter" data-code="=" style="--size: 2.5;"></div>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const keyboard = document.querySelector('.keyboard');
+        const keys = document.querySelectorAll('.key');
+        let currentInput = '';
+
+        keys.forEach(key => {
+            key.addEventListener('click', () => {
+                handleInput(key.dataset.code);
+                if (key.dataset.code === '=') {
+                    key.classList.add('active');
+                    setTimeout(() => key.classList.remove('active'), 100);
+                    triggerGlowAnimation();
+                } else {
+                    key.classList.add('active');
+                    setTimeout(() => key.classList.remove('active'), 100);
+                }
+            });
+        });
+
+        window.addEventListener('keydown', e => {
+            const key = e.key === 'Enter' ? '=' : e.key;
+            if (/[0-9+\-*/.=]/.test(key) || key === 'Backspace') {
+                handleInput(key);
+                const keyElement = document.querySelector(`.key[data-code="${key}"]`);
+                if (keyElement) {
+                    keyElement.classList.add('active');
+                    setTimeout(() => keyElement.classList.remove('active'), 100);
+                    if (key === '=') {
+                        triggerGlowAnimation();
+                    }
+                }
+            }
+        });
+
+        function handleInput(input) {
+            if (input === 'C') {
+                currentInput = '';
+            } else if (input === '=') {
+                try {
+                    currentInput = eval(currentInput).toString();
+                } catch {
+                    currentInput = 'Error';
+                }
+            } else if (input === 'Backspace') {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput += input;
+            }
+            display.textContent = currentInput || '0';
+        }
+
+        function triggerGlowAnimation() {
+            const centerX = keyboard.offsetWidth / 2;
+            const centerY = keyboard.offsetHeight / 2;
+
+            keys.forEach(key => {
+                const rect = key.getBoundingClientRect();
+                const keyX = rect.left + rect.width / 2;
+                const keyY = rect.top + rect.height / 2;
+                const distance = Math.sqrt(Math.pow(centerX - keyX, 2) + Math.pow(centerY - keyY, 2));
+
+                setTimeout(() => {
+                    key.style.setProperty('--color', 'hsl(120, 70%, 45%)');
+                    key.classList.add('active');
+                    setTimeout(() => {
+                        key.classList.remove('active');
+                        key.style.removeProperty('--color');
+                    }, 200);
+                }, distance * 0.5);
+            });
+        }
+    </script>
+</body>
+
+</html>
